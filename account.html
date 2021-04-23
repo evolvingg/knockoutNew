@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>account</title>
+    <script src="./knockout.js"></script>
+  </head>
+  <body>
+    <h2>Account details</h2>
+    <div>
+
+      Account id's:
+      <select id="accountList" data-bind="options:accounts,optionsText:'name',optionsValue:'id'"></select>
+
+      Total no. of accounts:<span data-bind="text:accounts().length"></span>
+
+      Total balance:<span data-bind="text:totalBalance()"></span>
+
+      <hr/>
+      <h3>Selected Account</h3>
+      id:<span data-bind="text:accounts()[selectedAccountIndex()].id"></span>
+      name:<span data-bind="text:accounts()[selectedAccountIndex()].name"></span>
+      balance:<span data-bind="text:accounts()[selectedAccountIndex()].balance"></span>
+      <button value="ShowDetails" id="btnShowDetails">ShowDetails</button>
+
+      <hr/>
+      <input type="text" id="amount" />
+      <button id="depositAmount">Deposit</button>
+      <hr/>
+      New balance:<input type="text" data-bind="value:balance"/>
+
+      <hr/>
+      <h2>New Account</h2>
+
+      New id: <input type="text" id="textId" />
+      New name: <input type="text" id="textName" />
+      New balance: <input type="text" id="textBalance" />
+
+      <button id="btnAddAccount">Add Account</button>
+
+      <button id="btnPopAccount">Delete last  added account </button>
+
+    </div>
+    <script>
+      //model
+      function Account(id,name,balance) {
+        this.id=id;
+        this.name=name;
+        this.balance=balance;
+      }
+
+      //viewmodel
+      function AccountViewModel(acc) {
+        this.id=acc.id;
+        this.name=acc.name;
+        this.balance=ko.observable(acc.balance);
+        var a1= new Account(1,'Acc1',10000);
+        var a2= new Account(2,'Acc2',20000);
+        var a3= new Account(3,'Acc3',30000);
+        this.accounts=ko.observableArray([a1,a2,a3]);
+        this.selectedAccountIndex=ko.observable(0);
+        this.totalBalance=ko.computed(function(){
+          var total =0;
+          for(var i=0;i<this.accounts().length;i++) {
+            total+=Number(this.accounts()[i].balance);
+          }
+          return total;
+        },this)
+      }
+
+      var acc = new Account(1,'test',100);
+      var accViewModel = new AccountViewModel(acc); 
+      ko.applyBindings(accViewModel);
+
+      </script>
+      <script>
+
+      var showBtn = document.getElementById('btnShowDetails');
+
+      showBtn.onclick = function() {
+        alert(accViewModel.id+ ' '+accViewModel.balance() )
+      }
+
+      var depositAmount = document.getElementById('depositAmount');
+      depositAmount.onclick= function() {
+        var amt = document.getElementById('amount');
+        accViewModel.balance(accViewModel.balance()+Number(amt.value))
+      }
+
+      var addAccount = document.getElementById('btnAddAccount').onclick = function() {
+        var newId=document.getElementById('textId').value;
+        var newName=document.getElementById('textName').value;
+        var newBalance=document.getElementById('textBalance').value;
+        accViewModel.accounts([...accViewModel.accounts(),new Account(newId,newName,newBalance)]);
+        alert(accViewModel.accounts().length)
+      }
+
+      var popAccount = document.getElementById('btnPopAccount').onclick=function(){
+        accViewModel.accounts.pop();
+      };
+
+
+      var accountList = document.getElementById('accountList');
+      accountList.onchange = function(){
+        accViewModel.selectedAccountIndex(accountList.selectedIndex);
+      }
+
+      
+    </script>
+  </body>
+</html>

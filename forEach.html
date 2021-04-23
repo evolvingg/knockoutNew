@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>account</title>
+    <script src="./knockout.js"></script>
+  </head>
+  <body>
+    <h2>Account details</h2>
+    <table data-bind="foreach:{data:accounts, as:'acc'}">
+        <tr>
+            <td data-bind="text:(($index()+1)+'/'+$parent.count())"></td>
+            <td data-bind="text:acc.id"></td>
+            <td data-bind="text:acc.name"></td>
+            <td data-bind="text:acc.balance"></td>
+            <td>
+                <ul data-bind="foreach:{data:deposits,as:'amt'}">
+                    <li data-bind="text:(acc.name+ ' deposited ' +amt+' '+ $parents[1].count())"></li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <ul data-bind="foreach:colors">
+        <li data-bind="text:$data"></li>
+    </ul>
+
+    <h3>Another table</h3>
+    <table data-bind="foreach:accounts">
+        <tr>
+            <td data-bind="text:($index()+1)"></td>
+            <td data-bind="text:id"></td>
+            <td data-bind="text:name"></td>
+            <td data-bind="text:balance"></td>
+            <td>
+                <ul data-bind="foreach:deposits">
+                    <li data-bind="text:$data"></li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+      //model
+      function Account(id,name,balance,deposits) {
+        this.id=id;
+        this.name=name;
+        this.balance=balance;
+        this.deposits=deposits;
+      }
+
+      //viewmodel
+      function AccountViewModel() {
+        var a1= new Account(1,'Acc1',10000,[10000,12000,13000,14000]);
+        var a2= new Account(2,'Acc2',20000,[20000,21000,2300,24000]);
+        var a3= new Account(3,'Acc3',30000,[3000,3001,20001,4000]);
+        var a4= new Account(4,'Acc4',40000,[5000,2000,3000,412]);
+        this.accounts=ko.observableArray([a1,a2,a3,a4]);
+        this.colors=ko.observable(['red','green','blue','black','orange']);
+        this.count=ko.computed(function(){
+            return this.accounts().length;
+        },this);
+      }
+
+      var accViewModel = new AccountViewModel(); 
+      ko.applyBindings(accViewModel);
+
+      </script>
+  </body>
+</html>
